@@ -1,0 +1,65 @@
+<p-dialog [(visible)]="modalDialog" header="Detalhes do Registro" (onHide)="hideDialog()" [transitionOptions]="'100ms'" [modal]="true" styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <div [formGroup]="form" class="field">
+            <div [class]="style.formItem" *ngFor="let field of fields">
+                <label [for]="field.id">{{ field.label }}</label>
+                <span class="p-float-label">
+                    <div *ngIf="field.type === 'text'">
+                        <input [id]="field.id" [formControlName]="field.id" [(ngModel)]="data[field.id]" pInputText />
+                    </div>
+                    <div *ngIf="field.type === 'number'">
+                        <input type="number" [id]="field.id" [formControlName]="field.id" [(ngModel)]="data[field.id]" pInputText />
+                    </div>
+                    <div *ngIf="field.type === 'textArea'">
+                        <textarea [id]="field.id" [formControlName]="field.id" rows="5" cols="30" pInputTextarea [(ngModel)]="data[field.id]"></textarea>
+                    </div>
+                    <div *ngIf="field.type === 'listbox'">
+                        <p-listbox
+                            [id]="field.id"
+                            [formControlName]="field.id"
+                            [options]="field.options!"
+                            [(ngModel)]="data[field.id]"
+                            placeholder="Selecione um valor"
+                            optionValue="code"
+                            optionLabel="name"
+                            [style]="{ width: '17rem' }"
+                        ></p-listbox>
+                    </div>
+                    <div *ngIf="field.type === 'dropdown'">
+                        <p-dropdown
+                            [id]="field.id"
+                            [formControlName]="field.id"
+                            [options]="field.options!"
+                            [(ngModel)]="data[field.id]"
+                            placeholder="Selecione um valor"
+                            [filter]="true"
+                            filterBy="name"
+                            optionValue="code"
+                            optionLabel="name"
+                            appendTo="body"
+                            [style]="{ width: '17rem' }"
+                        ></p-dropdown>
+                    </div>
+                    <div *ngIf="field.type === 'multiselect'">
+                        <p-multiSelect
+                            [id]="field.id"
+                            [formControlName]="field.id"
+                            [options]="field.options!"
+                            [(ngModel)]="data[field.id]"
+                            placeholder="Selecione um valor"
+                            optionValue="code"
+                            optionLabel="name"
+                            appendTo="body"
+                            [style]="{ width: '17rem' }"
+                        ></p-multiSelect>
+                    </div>
+                    <small *ngIf="isFieldInvalid(field.id)" id="email-help" class="p-error">{{ getErrorMessage(field.id) }}</small>
+                </span>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+        <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text" [disabled]="!form.valid" (click)="save()"></button>
+    </ng-template>
+</p-dialog>

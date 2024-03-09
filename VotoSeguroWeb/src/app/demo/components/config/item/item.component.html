@@ -1,0 +1,21 @@
+<p-progressBar [hidden]="!loading" mode="indeterminate" [style]="{ height: '3px' }"></p-progressBar>
+<p-confirmDialog></p-confirmDialog>
+<p-toast></p-toast>
+<p-dialog [(visible)]="modalDialog" header="Detalhes do Registro" [transitionOptions]="'100ms'" [modal]="true"
+    styleClass="p-fluid">
+    <ng-template pTemplate="content">
+        <label>Nome</label><small class="p-error">*</small>
+        <input [(ngModel)]="selectedRegistry.name" pInputText />
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Cancelar" icon="pi pi-times" class="p-button-text"
+            (click)="hideDialog()"></button>
+        <button pButton pRipple label="Salvar" icon="pi pi-check" class="p-button-text" (click)="save()"></button>
+    </ng-template>
+</p-dialog>
+<div class="card" *ngIf="loading == false">
+    <h3>Gerenciar Itens</h3>
+    <button pButton icon="pi pi-plus" label="Criar Item" class="p-button-success mb-3"
+        (click)="create()"></button>
+    <app-form-table [loading]="loading" [cols]="cols" [data]="data" (event)="event($event)"></app-form-table>
+</div>

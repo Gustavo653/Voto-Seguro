@@ -1,0 +1,94 @@
+<p-table
+    #dt
+    [loading]="loading"
+    [columns]="cols"
+    [lazy]="lazy"
+    [value]="data"
+    [(selection)]="selection"
+    styleClass="p-datatable-gridlines"
+    [rows]="10"
+    [totalRecords]="totalRecords"
+    [rowsPerPageOptions]="[10, 25, 50, 100]"
+    [showCurrentPageReport]="true"
+    currentPageReportTemplate="Exibindo {first} de {last} registros / Total: {totalRecords} registros"
+    [rowHover]="true"
+    [paginator]="true"
+    (onLazyLoad)="lazyLoad($event)"
+    scrollHeight="flex"
+    responsiveLayout="stack"
+    [globalFilterFields]="globalFilterCols"
+>
+    <ng-template pTemplate="caption">
+        <div class="flex justify-content-between flex-column sm:flex-row">
+            <button pButton label="Limpar" class="p-button-outlined mb-2" icon="pi pi-filter-slash" (click)="clear(dt)"></button>
+            <span class="p-input-icon-left mb-2">
+                <i class="pi pi-search"></i>
+                <input pInputText pTooltip="Filtro apenas por campos ordenáveis" type="text" #filter (input)="onGlobalFilter(dt, $event)" placeholder="Buscar palavra-chave" class="w-full" />
+            </span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th [attr.colspan]="span.span" class="text-center" *ngFor="let span of spans">
+                {{ span.text }}
+            </th>
+        </tr>
+        <tr>
+            <th [pSortableColumn]="col.field" *ngFor="let col of cols">
+                <p-sortIcon [field]="col.field" *ngIf="getSort(col.type) && checkRelatedProperty(col.field)"></p-sortIcon>
+                <ng-container *ngIf="col.type == 'checkbox-selection'">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </ng-container>
+                <ng-container *ngIf="col.type != 'checkbox-selection'">
+                    {{ col.header }}
+                </ng-container>
+            </th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowData>
+        <tr>
+            <td *ngFor="let col of cols">
+                <span class="p-column-title" [pSortableColumn]="col.field">
+                    <p-sortIcon [field]="col.field" *ngIf="getSort(col.type)"></p-sortIcon>
+                    {{ col.header }}</span
+                >
+                <ng-container *ngIf="col.type == 'date'">
+                    {{ _(rowData, col.field) | date : col.format }}
+                </ng-container>
+                <ng-container *ngIf="col.type == 'text'">
+                    {{ _(rowData, col.field) }}
+                </ng-container>
+                <ng-container *ngIf="col.type == 'currency'">
+                    {{ _(rowData, col.field) | currency : "BRL" }}
+                </ng-container>
+                <ng-container *ngIf="col.type == 'number'">
+                    {{ _(rowData, col.field) | number }}
+                </ng-container>
+                <ng-container *ngIf="col.type == 'checkbox-selection'">
+                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                </ng-container>
+                <ng-container *ngIf="col.type == 'checkbox'">
+                    <div style="display: flex; justify-content: center">
+                        <p-checkbox [ngModel]="_(rowData, col.field)" trueValue="T" falseValue="N" [binary]="true" [readonly]="true"></p-checkbox>
+                    </div>
+                </ng-container>
+                <ng-container *ngIf="col.type == 'edit'">
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-warning" (click)="edit(rowData)"></button>
+                </ng-container>
+                <ng-container *ngIf="col.type == 'delete'">
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="delete(rowData)"></button>
+                </ng-container>
+                <ng-container *ngIf="col.type == 'redirect'">
+                    <div style="display: flex; justify-content: center">
+                        <button pButton pRipple type="button" class="p-button" icon="pi pi-fw pi-external-link" [routerLink]="[col.format, rowData.id]"></button>
+                    </div>
+                </ng-container>
+            </td>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="emptymessage">
+        <tr>
+            <td>Nenhum registro encontrado!</td>
+        </tr>
+    </ng-template>
+</p-table>
