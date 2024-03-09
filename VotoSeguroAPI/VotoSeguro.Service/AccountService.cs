@@ -127,7 +127,6 @@ namespace VotoSeguro.Service
                         return responseDTO;
                     }
                     userDTO.IdTenant = null;
-                    userDTO.Coren = null;
                 }
                 else
                 {
@@ -196,7 +195,6 @@ namespace VotoSeguro.Service
                         return responseDTO;
                     }
                     userDTO.IdTenant = null;
-                    userDTO.Coren = null;
                 }
                 else
                 {

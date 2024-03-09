@@ -20,7 +20,7 @@ namespace VotoSeguro.API.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = nameof(RoleName.Admin))]
-        public async Task<IActionResult> UpdateTenant([FromRoute] int id, [FromBody] BasicDTO name)
+        public async Task<IActionResult> UpdateTenant([FromRoute] Guid id, [FromBody] BasicDTO name)
         {
             var item = await _tenantService.Update(id, name);
             return StatusCode(item.Code, item);
@@ -28,7 +28,7 @@ namespace VotoSeguro.API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = nameof(RoleName.Admin))]
-        public async Task<IActionResult> RemoveTenant([FromRoute] int id)
+        public async Task<IActionResult> RemoveTenant([FromRoute] Guid id)
         {
             var item = await _tenantService.Remove(id);
             return StatusCode(item.Code, item);

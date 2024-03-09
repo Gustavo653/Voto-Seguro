@@ -18,14 +18,14 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateCategory([FromRoute] int id, [FromBody] BasicDTO name)
+        public async Task<IActionResult> UpdateCategory([FromRoute] Guid id, [FromBody] BasicDTO name)
         {
             var category = await _categoryService.Update(id, name);
             return StatusCode(category.Code, category);
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> RemoveCategory([FromRoute] int id)
+        public async Task<IActionResult> RemoveCategory([FromRoute] Guid id)
         {
             var category = await _categoryService.Remove(id);
             return StatusCode(category.Code, category);

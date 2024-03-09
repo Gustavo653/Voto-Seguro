@@ -40,7 +40,7 @@ namespace VotoSeguro.Service
             return responseDTO;
         }
 
-        public async Task<ResponseDTO> Update(int id, BasicDTO basicDTO)
+        public async Task<ResponseDTO> Update(Guid id, BasicDTO basicDTO)
         {
             ResponseDTO responseDTO = new();
             try
@@ -65,7 +65,7 @@ namespace VotoSeguro.Service
             return responseDTO;
         }
 
-        public async Task<ResponseDTO> Remove(int id)
+        public async Task<ResponseDTO> Remove(Guid id)
         {
             ResponseDTO responseDTO = new();
             try
