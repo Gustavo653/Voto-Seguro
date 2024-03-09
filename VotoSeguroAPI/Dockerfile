@@ -7,24 +7,24 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ItsCheck.API/ItsCheck.API.csproj", "ItsCheck.API/"]
-COPY ["ItsCheck.DTO/ItsCheck.DTO.csproj", "ItsCheck.DTO/"]
-COPY ["ItsCheck.Domain/ItsCheck.Domain.csproj", "ItsCheck.Domain/"]
-COPY ["ItsCheck.Persistence/ItsCheck.Persistence.csproj", "ItsCheck.Persistence/"]
-COPY ["ItsCheck.Service/ItsCheck.Service.csproj", "ItsCheck.Service/"]
-COPY ["ItsCheck.DataAccess/ItsCheck.DataAccess.csproj", "ItsCheck.DataAccess/"]
-COPY ["ItsCheck.Infrastructure/ItsCheck.Infrastructure.csproj", "ItsCheck.Infrastructure/"]
-COPY ["ItsCheck.Utils/ItsCheck.Utils.csproj", "ItsCheck.Utils/"]
-RUN dotnet restore "ItsCheck.API/ItsCheck.API.csproj"
+COPY ["VotoSeguro.API/VotoSeguro.API.csproj", "VotoSeguro.API/"]
+COPY ["VotoSeguro.DTO/VotoSeguro.DTO.csproj", "VotoSeguro.DTO/"]
+COPY ["VotoSeguro.Domain/VotoSeguro.Domain.csproj", "VotoSeguro.Domain/"]
+COPY ["VotoSeguro.Persistence/VotoSeguro.Persistence.csproj", "VotoSeguro.Persistence/"]
+COPY ["VotoSeguro.Service/VotoSeguro.Service.csproj", "VotoSeguro.Service/"]
+COPY ["VotoSeguro.DataAccess/VotoSeguro.DataAccess.csproj", "VotoSeguro.DataAccess/"]
+COPY ["VotoSeguro.Infrastructure/VotoSeguro.Infrastructure.csproj", "VotoSeguro.Infrastructure/"]
+COPY ["VotoSeguro.Utils/VotoSeguro.Utils.csproj", "VotoSeguro.Utils/"]
+RUN dotnet restore "VotoSeguro.API/VotoSeguro.API.csproj"
 COPY . .
-WORKDIR "/src/ItsCheck.API"
-RUN dotnet build "ItsCheck.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/VotoSeguro.API"
+RUN dotnet build "VotoSeguro.API.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "ItsCheck.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "VotoSeguro.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ItsCheck.API.dll"]
+ENTRYPOINT ["dotnet", "VotoSeguro.API.dll"]
