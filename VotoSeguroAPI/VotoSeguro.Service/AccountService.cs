@@ -1,14 +1,14 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Serilog;
+using VotoSeguro.Domain;
 using VotoSeguro.Domain.Enum;
 using VotoSeguro.DTO;
 using VotoSeguro.DTO.Base;
 using VotoSeguro.Infrastructure.Repository;
 using VotoSeguro.Infrastructure.Service;
 using VotoSeguro.Utils;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
-using VotoSeguro.Domain;
 
 namespace VotoSeguro.Service
 {

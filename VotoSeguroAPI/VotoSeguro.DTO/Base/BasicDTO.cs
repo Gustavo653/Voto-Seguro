@@ -4,7 +4,7 @@ namespace VotoSeguro.DTO.Base
 {
     public class BasicDTO
     {
-        [Required] 
+        [Required]
         public required string Name { get; set; }
     }
 }

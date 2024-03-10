@@ -1,9 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Serilog;
 using VotoSeguro.Domain;
 using VotoSeguro.DTO.Base;
 using VotoSeguro.Infrastructure.Repository;
 using VotoSeguro.Infrastructure.Service;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 namespace VotoSeguro.Service
 {

@@ -1,9 +1,9 @@
-﻿using VotoSeguro.Domain;
-using VotoSeguro.Utils;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
+using VotoSeguro.Domain;
+using VotoSeguro.Utils;
 
 namespace VotoSeguro.Persistence
 {

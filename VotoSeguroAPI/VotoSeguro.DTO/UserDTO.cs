@@ -1,5 +1,5 @@
-using VotoSeguro.Domain.Enum;
 using System.ComponentModel.DataAnnotations;
+using VotoSeguro.Domain.Enum;
 
 namespace VotoSeguro.DTO
 {

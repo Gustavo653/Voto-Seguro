@@ -1,9 +1,6 @@
-using VotoSeguro.Domain.Enum;
-using VotoSeguro.DTO.Base;
-using VotoSeguro.Infrastructure.Service;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using VotoSeguro.DTO;
+using VotoSeguro.Infrastructure.Service;
 
 namespace VotoSeguro.API.Controllers
 {

@@ -1,12 +1,5 @@
 using Hangfire;
 using Hangfire.PostgreSql;
-using VotoSeguro.DataAccess;
-using VotoSeguro.Domain.Enum;
-using VotoSeguro.Infrastructure.Repository;
-using VotoSeguro.Infrastructure.Service;
-using VotoSeguro.Persistence;
-using VotoSeguro.Service;
-using VotoSeguro.Utils;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +8,14 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
+using VotoSeguro.DataAccess;
 using VotoSeguro.Domain;
+using VotoSeguro.Domain.Enum;
+using VotoSeguro.Infrastructure.Repository;
+using VotoSeguro.Infrastructure.Service;
+using VotoSeguro.Persistence;
+using VotoSeguro.Service;
+using VotoSeguro.Utils;
 
 namespace VotoSeguro.API
 {
