@@ -1,37 +1,24 @@
 ﻿using VotoSeguro.Domain;
-using VotoSeguro.Domain.Identity;
 using VotoSeguro.Utils;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace VotoSeguro.Persistence
 {
-    public class VotoSeguroContext : IdentityDbContext<User, Role, int,
-                                               IdentityUserClaim<int>, UserRole, IdentityUserLogin<int>,
-                                               IdentityRoleClaim<int>, IdentityUserToken<int>>
+    public class VotoSeguroContext(DbContextOptions<VotoSeguroContext> options, IHttpContextAccessor httpContextAccessor) : IdentityDbContext<User>(options)
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private ISession Session => _httpContextAccessor.HttpContext!.Session;
-
-        public VotoSeguroContext(DbContextOptions<VotoSeguroContext> options, IHttpContextAccessor httpContextAccessor) : base(options)
-        {
-            _httpContextAccessor = httpContextAccessor;
-        }
-
-        protected VotoSeguroContext()
-        {
-        }
 
         public DbSet<Category> Categories { get; set; }
 
-        private int? GetTenantId()
+        private Guid? GetTenantId()
         {
             Session.TryGetValue(Consts.ClaimTenantId, out byte[]? tenantId);
 
-            if (int.TryParse(Encoding.UTF8.GetString(tenantId!), out int userId))
+            if (Guid.TryParse(Encoding.UTF8.GetString(tenantId!), out Guid userId))
                 return userId;
 
             return null;
@@ -40,21 +27,6 @@ namespace VotoSeguro.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<UserRole>(x =>
-            {
-                x.HasKey(ur => new { ur.UserId, ur.RoleId });
-
-                x.HasOne(ur => ur.Role)
-                    .WithMany(r => r.UserRoles)
-                    .HasForeignKey(ur => ur.RoleId)
-                    .IsRequired();
-
-                x.HasOne(ur => ur.User)
-                    .WithMany(r => r.UserRoles)
-                    .HasForeignKey(ur => ur.UserId)
-                    .IsRequired();
-            });
 
             modelBuilder.Entity<Category>(x =>
             {

@@ -11,8 +11,8 @@ namespace VotoSeguro.DTO
         public string? Password { get; set; }
         [Required]
         public required string Name { get; set; }
-        public int? IdTenant { get; set; }
+        public Guid? IdTenant { get; set; }
         [Required]
-        public required RoleName Role { get; set; }
+        public required UserRole Role { get; set; }
     }
 }

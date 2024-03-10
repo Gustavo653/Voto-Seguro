@@ -1,5 +1,4 @@
 using VotoSeguro.Domain.Enum;
-using VotoSeguro.Domain.Identity;
 using VotoSeguro.DTO;
 using VotoSeguro.DTO.Base;
 using VotoSeguro.Infrastructure.Repository;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using VotoSeguro.Domain;
 
 namespace VotoSeguro.Service
 {
@@ -43,7 +43,6 @@ namespace VotoSeguro.Service
             {
                 return await _userRepository.GetEntities()
                     .Include(x => x.Tenant)
-                    .Include(x => x.UserRoles).ThenInclude(x => x.Role)
                     .FirstOrDefaultAsync(x => x.NormalizedEmail == email.ToUpper());
             }
             catch (Exception ex)
@@ -79,7 +78,7 @@ namespace VotoSeguro.Service
                 responseDTO.Object = new
                 {
                     userName = user.UserName,
-                    role = user.UserRoles.FirstOrDefault()?.Role.Name,
+                    role = user.Role,
                     name = user.Name,
                     email = user.Email,
                     token = await _tokenService.CreateToken(user)
@@ -116,13 +115,13 @@ namespace VotoSeguro.Service
             try
             {
                 Log.Information("Role do usuário do DTO: {role}", userDTO.Role);
-                if (userDTO.Role == RoleName.Admin)
+                if (userDTO.Role == UserRole.Admin)
                 {
                     var requestUser = await _userManager.FindByIdAsync(_session.GetString(Consts.ClaimUserId)!);
-                    var requestUserRoleAdmin = await _userManager.IsInRoleAsync(requestUser!, RoleName.Admin.ToString());
+                    var requestUserRoleAdmin = await _userManager.IsInRoleAsync(requestUser!, UserRole.Admin.ToString());
                     if (!requestUserRoleAdmin)
                     {
-                        Log.Warning("O usuário {user} não pertence ao role {role}", requestUser!.Id, RoleName.Admin);
+                        Log.Warning("O usuário {user} não pertence ao role {role}", requestUser!.Id, UserRole.Admin);
                         responseDTO.Code = 403;
                         return responseDTO;
                     }
@@ -130,7 +129,7 @@ namespace VotoSeguro.Service
                 }
                 else
                 {
-                    userDTO.IdTenant = Convert.ToInt32(string.IsNullOrEmpty(_session.GetString(Consts.ClaimTenantId)) ? userDTO.IdTenant.ToString() : _session.GetString(Consts.ClaimTenantId));
+                    userDTO.IdTenant = Guid.Parse(string.IsNullOrEmpty(_session.GetString(Consts.ClaimTenantId)) ? userDTO.IdTenant.ToString()! : _session.GetString(Consts.ClaimTenantId)!);
                     Log.Information("Atribuindo ao usuário novo o tenant: {idTenant}", userDTO.IdTenant);
                 }
 
@@ -153,7 +152,8 @@ namespace VotoSeguro.Service
                     Email = userDTO.Email,
                     NormalizedEmail = userDTO.Email.ToUpper(),
                     NormalizedUserName = userDTO.Email.ToUpper(),
-                    TenantId = userDTO.IdTenant
+                    TenantId = userDTO.IdTenant,
+                    Role = userDTO.Role,
                 };
 
                 userEntity.PasswordHash = _userManager.PasswordHasher.HashPassword(userEntity, userDTO.Password);
@@ -163,8 +163,6 @@ namespace VotoSeguro.Service
                 await _userManager.UpdateSecurityStampAsync(userEntity);
 
                 Log.Information("Usuário persistido id: {id}", userEntity.Id);
-
-                await AddUserInRole(userEntity, userDTO.Role);
                 await _userRepository.SaveChangesAsync();
 
                 Log.Information("Usuário adicionado no role: {role}", userDTO.Role);
@@ -178,19 +176,19 @@ namespace VotoSeguro.Service
             return responseDTO;
         }
 
-        public async Task<ResponseDTO> UpdateUser(int id, UserDTO userDTO)
+        public async Task<ResponseDTO> UpdateUser(Guid id, UserDTO userDTO)
         {
             ResponseDTO responseDTO = new();
             try
             {
                 Log.Information("Role do usuário do DTO: {role}", userDTO.Role);
-                if (userDTO.Role == RoleName.Admin)
+                if (userDTO.Role == UserRole.Admin)
                 {
                     var requestUser = await _userManager.FindByIdAsync(_session.GetString(Consts.ClaimUserId)!);
-                    var requestUserRoleAdmin = await _userManager.IsInRoleAsync(requestUser!, RoleName.Admin.ToString());
+                    var requestUserRoleAdmin = await _userManager.IsInRoleAsync(requestUser!, UserRole.Admin.ToString());
                     if (!requestUserRoleAdmin)
                     {
-                        Log.Warning("O usuário {user} não pertence ao role {role}", requestUser!.Id, RoleName.Admin);
+                        Log.Warning("O usuário {user} não pertence ao role {role}", requestUser!.Id, UserRole.Admin);
                         responseDTO.Code = 403;
                         return responseDTO;
                     }
@@ -198,11 +196,11 @@ namespace VotoSeguro.Service
                 }
                 else
                 {
-                    userDTO.IdTenant = Convert.ToInt32(string.IsNullOrEmpty(_session.GetString(Consts.ClaimTenantId)) ? userDTO.IdTenant.ToString() : _session.GetString(Consts.ClaimTenantId));
+                    userDTO.IdTenant = Guid.Parse(string.IsNullOrEmpty(_session.GetString(Consts.ClaimTenantId)) ? userDTO.IdTenant.ToString() : _session.GetString(Consts.ClaimTenantId));
                     Log.Information("Atribuindo ao usuário novo o tenant: {idTenant}", userDTO.IdTenant);
                 }
 
-                var userEntity = await _userRepository.GetTrackedEntities().FirstOrDefaultAsync(x => x.Id == id);
+                var userEntity = await _userRepository.GetTrackedEntities().FirstOrDefaultAsync(x => x.Id == id.ToString());
                 if (userEntity == null)
                 {
                     responseDTO.SetBadInput($"Usuário não encotrado com este id: {id}!");
@@ -221,7 +219,6 @@ namespace VotoSeguro.Service
                 var userRoles = await _userManager.GetRolesAsync(userEntity);
                 await _userManager.RemoveFromRolesAsync(userEntity, userRoles);
                 await _userRepository.SaveChangesAsync();
-                await AddUserInRole(userEntity, userDTO.Role);
                 Log.Information("Usuário adicionado no role: {role}", userDTO.Role);
 
                 await _userRepository.SaveChangesAsync();
@@ -236,13 +233,13 @@ namespace VotoSeguro.Service
             return responseDTO;
         }
 
-        public async Task<ResponseDTO> RemoveUser(int id)
+        public async Task<ResponseDTO> RemoveUser(Guid id)
         {
             ResponseDTO responseDTO = new();
             try
             {
                 var session = _session.GetString(Consts.ClaimTenantId);
-                var userEntity = await _userRepository.GetTrackedEntities().FirstOrDefaultAsync(x => x.Id == id && x.TenantId == (session == null ? x.TenantId : Convert.ToInt32(session)));
+                var userEntity = await _userRepository.GetTrackedEntities().FirstOrDefaultAsync(x => x.Id == id.ToString() && x.TenantId == (session == null ? x.TenantId : Guid.Parse(session)));
                 if (userEntity == null)
                 {
                     responseDTO.SetBadInput($"Usuário não encontrado com este id: {id}!");
@@ -265,12 +262,6 @@ namespace VotoSeguro.Service
             return responseDTO;
         }
 
-        private async Task AddUserInRole(User user, RoleName role)
-        {
-            if (!await _userManager.IsInRoleAsync(user, role.ToString()))
-                await _userManager.AddToRoleAsync(user, role.ToString());
-        }
-
         public async Task<ResponseDTO> GetUsers()
         {
             ResponseDTO responseDTO = new();
@@ -285,7 +276,7 @@ namespace VotoSeguro.Service
                                                               x.Name,
                                                               x.Email,
                                                               x.UserName,
-                                                              roles = string.Join(",", x.UserRoles.Select(ur => ur.Role.NormalizedName))
+                                                              x.Role
                                                           }).ToListAsync();
             }
             catch (Exception ex)

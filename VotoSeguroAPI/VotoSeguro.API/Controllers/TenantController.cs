@@ -11,7 +11,7 @@ namespace VotoSeguro.API.Controllers
         private readonly ITenantService _tenantService = tenantService;
 
         [HttpPost("")]
-        [Authorize(Roles = nameof(RoleName.Admin))]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> CreateTenant([FromBody] BasicDTO name)
         {
             var item = await _tenantService.Create(name);
@@ -19,7 +19,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = nameof(RoleName.Admin))]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> UpdateTenant([FromRoute] Guid id, [FromBody] BasicDTO name)
         {
             var item = await _tenantService.Update(id, name);
@@ -27,7 +27,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = nameof(RoleName.Admin))]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> RemoveTenant([FromRoute] Guid id)
         {
             var item = await _tenantService.Remove(id);
@@ -35,7 +35,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpGet("")]
-        [Authorize(Roles = nameof(RoleName.Admin))]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> GetTenants()
         {
             var item = await _tenantService.GetList();

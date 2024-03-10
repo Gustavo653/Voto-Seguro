@@ -1,4 +1,4 @@
-﻿using VotoSeguro.Domain.Identity;
+﻿using VotoSeguro.Domain;
 using VotoSeguro.Infrastructure.Repository;
 using VotoSeguro.Persistence;
 

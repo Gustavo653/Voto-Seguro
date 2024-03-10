@@ -1,4 +1,3 @@
-using VotoSeguro.Domain.Identity;
 using VotoSeguro.Infrastructure.Service;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -6,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using VotoSeguro.Domain;
 
 namespace VotoSeguro.Service
 {
@@ -41,12 +41,11 @@ namespace VotoSeguro.Service
             var claims = new List<Claim>
             {
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new(ClaimTypes.Name, user.Name),
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Role, user.Role.ToString()),
                 new(ClaimTypes.Email, user.Email ?? ""),
                 new(ClaimTypes.PrimaryGroupSid, user.Tenant?.Id.ToString() ?? ""),
             };
-
-            claims.AddRange(user.UserRoles.Select(role => new Claim(ClaimTypes.Role, role.Role.Name!)));
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 

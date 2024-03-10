@@ -2,7 +2,6 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using VotoSeguro.DataAccess;
 using VotoSeguro.Domain.Enum;
-using VotoSeguro.Domain.Identity;
 using VotoSeguro.Infrastructure.Repository;
 using VotoSeguro.Infrastructure.Service;
 using VotoSeguro.Persistence;
@@ -16,6 +15,7 @@ using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
+using VotoSeguro.Domain;
 
 namespace VotoSeguro.API
 {
@@ -105,7 +105,6 @@ namespace VotoSeguro.API
             {
                 var db = scope.ServiceProvider.GetRequiredService<VotoSeguroContext>();
                 db.Database.Migrate();
-                SeedRoles(scope.ServiceProvider).Wait();
                 SeedAdminUser(scope.ServiceProvider).Wait();
             }
 
@@ -197,13 +196,6 @@ namespace VotoSeguro.API
 
         private static void InjectUserDependencies(WebApplicationBuilder builder)
         {
-            builder.Services.AddIdentity<User, Role>()
-                            .AddEntityFrameworkStores<VotoSeguroContext>()
-                            .AddDefaultTokenProviders();
-
-            builder.Services.AddScoped<RoleManager<Role>>();
-            builder.Services.AddScoped<UserManager<User>>();
-
             builder.Services.AddIdentityCore<User>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -213,12 +205,11 @@ namespace VotoSeguro.API
                 options.Password.RequiredLength = 4;
                 options.User.RequireUniqueEmail = true;
             })
-            .AddRoles<Role>()
-            .AddRoleManager<RoleManager<Role>>()
-            .AddSignInManager<SignInManager<User>>()
-            .AddRoleValidator<RoleValidator<Role>>()
             .AddEntityFrameworkStores<VotoSeguroContext>()
+            .AddSignInManager()
             .AddDefaultTokenProviders();
+
+            builder.Services.AddScoped<UserManager<User>>();
         }
 
         private static void InjectRepositoryDependencies(WebApplicationBuilder builder)
@@ -236,32 +227,15 @@ namespace VotoSeguro.API
             builder.Services.AddScoped<ITenantService, TenantService>();
         }
 
-        private static async Task SeedRoles(IServiceProvider serviceProvider)
-        {
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
-            var roles = new List<string>() { RoleName.Elector.ToString(), RoleName.Admin.ToString() };
-            foreach (var role in roles)
-            {
-                if (!await roleManager.RoleExistsAsync(role))
-                {
-                    await roleManager.CreateAsync(new Role { Name = role });
-                }
-            }
-        }
-
         private static async Task SeedAdminUser(IServiceProvider serviceProvider)
         {
             var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var adminEmail = "admin@admin.com";
 
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            var user = new User { Name = "Admin", Email = adminEmail, UserName = "admin" };
+            var user = new User { Name = "Admin", Email = adminEmail, UserName = "admin", Role = UserRole.Admin };
             if (adminUser == null)
-            {
                 await userManager.CreateAsync(user, "Admin@123");
-            }
-            if (!await userManager.IsInRoleAsync(adminUser ?? user, RoleName.Admin.ToString()))
-                await userManager.AddToRoleAsync(adminUser ?? user, RoleName.Admin.ToString());
         }
     }
 }

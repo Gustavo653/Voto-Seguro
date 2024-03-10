@@ -26,7 +26,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpGet("")]
-        [Authorize(Roles = $"{nameof(RoleName.Admin)}, {nameof(RoleName.Elector)}")]
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
         public async Task<IActionResult> GetUsers()
         {
             var user = await _accountService.GetUsers();
@@ -34,7 +34,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpPost("")]
-        [Authorize(Roles = $"{nameof(RoleName.Admin)}, {nameof(RoleName.Elector)}")]
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
         public async Task<IActionResult> CreateUser([FromBody] UserDTO userDTO)
         {
             var user = await _accountService.CreateUser(userDTO);
@@ -42,16 +42,16 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = $"{nameof(RoleName.Admin)}, {nameof(RoleName.Elector)}")]
-        public async Task<IActionResult> UpdateUser([FromRoute] int id, [FromBody] UserDTO userDTO)
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
+        public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UserDTO userDTO)
         {
             var user = await _accountService.UpdateUser(id, userDTO);
             return StatusCode(user.Code, user);
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = $"{nameof(RoleName.Admin)}, {nameof(RoleName.Elector)}")]
-        public async Task<IActionResult> RemoveUser([FromRoute] int id)
+        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
+        public async Task<IActionResult> RemoveUser([FromRoute] Guid id)
         {
             var user = await _accountService.RemoveUser(id);
             return StatusCode(user.Code, user);

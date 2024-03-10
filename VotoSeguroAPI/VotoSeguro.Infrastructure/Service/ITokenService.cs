@@ -1,4 +1,4 @@
-using VotoSeguro.Domain.Identity;
+using VotoSeguro.Domain;
 
 namespace VotoSeguro.Infrastructure.Service
 {

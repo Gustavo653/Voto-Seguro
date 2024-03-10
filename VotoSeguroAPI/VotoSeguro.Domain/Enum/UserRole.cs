@@ -1,6 +1,6 @@
 ﻿namespace VotoSeguro.Domain.Enum
 {
-    public enum RoleName
+    public enum UserRole
     {
         Elector,
         Admin
