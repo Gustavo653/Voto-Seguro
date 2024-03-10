@@ -26,7 +26,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpGet("")]
-        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> GetUsers()
         {
             var user = await _accountService.GetUsers();
@@ -34,7 +34,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpPost("")]
-        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> CreateUser([FromBody] UserDTO userDTO)
         {
             var user = await _accountService.CreateUser(userDTO);
@@ -42,7 +42,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> UpdateUser([FromRoute] Guid id, [FromBody] UserDTO userDTO)
         {
             var user = await _accountService.UpdateUser(id, userDTO);
@@ -50,7 +50,7 @@ namespace VotoSeguro.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = $"{nameof(UserRole.Admin)}, {nameof(UserRole.Elector)}")]
+        [Authorize(Roles = nameof(UserRole.Admin))]
         public async Task<IActionResult> RemoveUser([FromRoute] Guid id)
         {
             var user = await _accountService.RemoveUser(id);

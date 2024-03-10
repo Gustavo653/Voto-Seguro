@@ -44,7 +44,7 @@ namespace VotoSeguro.Service
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Role, user.Role.ToString()),
                 new(ClaimTypes.Email, user.Email ?? ""),
-                new(ClaimTypes.PrimaryGroupSid, user.Tenant?.Id.ToString() ?? ""),
+                new(ClaimTypes.PrimaryGroupSid, user.TenantId.ToString() ?? ""),
             };
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);

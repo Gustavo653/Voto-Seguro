@@ -13,6 +13,9 @@ namespace VotoSeguro.Persistence
         private ISession Session => _httpContextAccessor.HttpContext!.Session;
 
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Poll> Polls { get; set; }
+        public DbSet<PollOption> PollOptions { get; set; }
+        public DbSet<PollVote> PollVotes { get; set; }
 
         private Guid? GetTenantId()
         {
@@ -31,6 +34,23 @@ namespace VotoSeguro.Persistence
             modelBuilder.Entity<Category>(x =>
             {
                 x.HasIndex(a => new { a.Name, a.TenantId }).IsUnique();
+                x.HasQueryFilter(a => a.TenantId == (GetTenantId() ?? a.TenantId));
+            });
+
+            modelBuilder.Entity<Poll>(x =>
+            {
+                x.HasQueryFilter(a => a.TenantId == (GetTenantId() ?? a.TenantId));
+            });
+
+            modelBuilder.Entity<PollVote>(x =>
+            {
+                x.HasIndex(a => new { a.UserId, a.TenantId, a.PollId }).IsUnique();
+                x.HasQueryFilter(a => a.TenantId == (GetTenantId() ?? a.TenantId));
+            });
+
+            modelBuilder.Entity<PollOption>(x =>
+            {
+                x.HasIndex(a => new { a.Title, a.TenantId, a.PollId }).IsUnique();
                 x.HasQueryFilter(a => a.TenantId == (GetTenantId() ?? a.TenantId));
             });
 

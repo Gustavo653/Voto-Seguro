@@ -15,9 +15,16 @@ namespace VotoSeguro.DataAccess
 
         public override Task InsertAsync(TType entity)
         {
+            entity.SetCreatedAt();
             Session.TryGetValue(Consts.ClaimTenantId, out byte[]? tenantId);
             entity.TenantId = Guid.Parse(Encoding.UTF8.GetString(tenantId!));
             return base.InsertAsync(entity);
+        }
+
+        public override void Update(TType entity)
+        {
+            entity.SetUpdatedAt();
+            base.Update(entity);
         }
     }
 }

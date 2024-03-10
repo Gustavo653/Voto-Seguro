@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace VotoSeguro.DataAccess
 {
-    public abstract class BaseRepository<TType, TContext>
+    public abstract class BaseRepository<TType, TContext>(TContext context)
             where TType : class
             where TContext : DbContext
     {
-        protected readonly TContext _dbContext;
-        protected BaseRepository(TContext context) => _dbContext = context;
+        protected readonly TContext _dbContext = context;
+
         protected TContext GetContext() => _dbContext;
         public virtual IQueryable<TType> GetEntities() => GetContext().Set<TType>()
                                                                       .AsNoTracking()

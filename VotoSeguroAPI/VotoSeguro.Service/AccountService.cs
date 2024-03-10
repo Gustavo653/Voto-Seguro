@@ -196,7 +196,7 @@ namespace VotoSeguro.Service
                 }
                 else
                 {
-                    userDTO.IdTenant = Guid.Parse(string.IsNullOrEmpty(_session.GetString(Consts.ClaimTenantId)) ? userDTO.IdTenant.ToString() : _session.GetString(Consts.ClaimTenantId));
+                    userDTO.IdTenant = Guid.Parse(string.IsNullOrEmpty(_session.GetString(Consts.ClaimTenantId)) ? userDTO.IdTenant.ToString()! : _session.GetString(Consts.ClaimTenantId)!);
                     Log.Information("Atribuindo ao usuário novo o tenant: {idTenant}", userDTO.IdTenant);
                 }
 
