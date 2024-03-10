@@ -4,10 +4,8 @@ using VotoSeguro.Persistence;
 
 namespace VotoSeguro.DataAccess
 {
-    public class UserRepository : BaseRepository<User, VotoSeguroContext>, IUserRepository
+    public class UserRepository(VotoSeguroContext context) : 
+                 BaseRepository<User, VotoSeguroContext>(context), IUserRepository
     {
-        public UserRepository(VotoSeguroContext context) : base(context)
-        {
-        }
     }
 }

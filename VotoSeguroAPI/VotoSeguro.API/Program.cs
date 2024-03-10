@@ -215,16 +215,16 @@ namespace VotoSeguro.API
         private static void InjectRepositoryDependencies(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+            builder.Services.AddScoped<IPollRepository, PollRepository>();
         }
 
         private static void InjectServiceDependencies(WebApplicationBuilder builder)
         {
             builder.Services.AddScoped<ITokenService, TokenService>();
             builder.Services.AddScoped<IAccountService, AccountService>();
-            builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<ITenantService, TenantService>();
+            builder.Services.AddScoped<IPollService, PollService>();
         }
 
         private static async Task SeedAdminUser(IServiceProvider serviceProvider)

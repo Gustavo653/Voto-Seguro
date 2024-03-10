@@ -3,7 +3,7 @@ using VotoSeguro.Infrastructure.Base;
 
 namespace VotoSeguro.Infrastructure.Repository
 {
-    public interface ICategoryRepository : IBaseRepository<Category>
+    public interface IPollRepository : IBaseRepository<Poll>
     {
     }
 }

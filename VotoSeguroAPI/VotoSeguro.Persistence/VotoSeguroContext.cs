@@ -12,7 +12,6 @@ namespace VotoSeguro.Persistence
         private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
         private ISession Session => _httpContextAccessor.HttpContext!.Session;
 
-        public DbSet<Category> Categories { get; set; }
         public DbSet<Poll> Polls { get; set; }
         public DbSet<PollOption> PollOptions { get; set; }
         public DbSet<PollVote> PollVotes { get; set; }
@@ -30,12 +29,6 @@ namespace VotoSeguro.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
-            modelBuilder.Entity<Category>(x =>
-            {
-                x.HasIndex(a => new { a.Name, a.TenantId }).IsUnique();
-                x.HasQueryFilter(a => a.TenantId == (GetTenantId() ?? a.TenantId));
-            });
 
             modelBuilder.Entity<Poll>(x =>
             {
